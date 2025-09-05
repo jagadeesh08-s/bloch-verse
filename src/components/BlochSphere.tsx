@@ -51,13 +51,13 @@ const SphereWithShading: React.FC<{ purity: number }> = ({ purity }) => {
     <mesh ref={sphereRef}>
       <sphereGeometry args={[1, 32, 32]} />
       <meshPhysicalMaterial
-        color="#195DDB"
+        color="#ffffff"
         transparent
-        opacity={0.1 + purity * 0.3}
-        wireframe={purity < 0.5}
-        metalness={0.8}
-        roughness={0.2}
-        clearcoat={1}
+        opacity={0.2 + purity * 0.4}
+        wireframe={purity < 0.7}
+        metalness={0.1}
+        roughness={0.8}
+        clearcoat={0.3}
       />
     </mesh>
   );

@@ -11,6 +11,9 @@ import BlochSphere3D from '@/components/BlochSphere';
 import { 
   simulateCircuit, 
   EXAMPLE_CIRCUITS, 
+  AVAILABLE_GATES,
+  SINGLE_QUBIT_GATES,
+  TWO_QUBIT_GATES,
   type QuantumCircuit, 
   type DensityMatrix 
 } from '@/utils/quantumSimulation';
@@ -167,6 +170,20 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
 
               <div>
                 <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                  Available Gates
+                </label>
+                <div className="mb-3 p-3 bg-muted/20 rounded-md text-xs">
+                  <div className="mb-2">
+                    <span className="font-semibold text-primary">Single-qubit:</span> {SINGLE_QUBIT_GATES.join(', ')}
+                  </div>
+                  <div>
+                    <span className="font-semibold text-accent">Two-qubit:</span> {TWO_QUBIT_GATES.join(', ')}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-muted-foreground mb-2 block">
                   Circuit JSON / QASM
                 </label>
                 <Textarea
@@ -176,7 +193,9 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
   "numQubits": 2,
   "gates": [
     {"name": "H", "qubits": [0]},
-    {"name": "CNOT", "qubits": [0, 1]}
+    {"name": "CNOT", "qubits": [0, 1]},
+    {"name": "RX", "qubits": [1]},
+    {"name": "CZ", "qubits": [0, 1]}
   ]
 }`}
                   className="h-64 font-mono text-sm bg-input border-primary/20 resize-none"

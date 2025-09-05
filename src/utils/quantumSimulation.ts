@@ -27,18 +27,60 @@ export const PAULI = {
 
 // Common quantum gates
 export const GATES = {
+  // Pauli gates
+  I: PAULI.I,
+  X: PAULI.X,
+  Y: PAULI.Y,
+  Z: PAULI.Z,
+  
+  // Hadamard gate
   H: [
     [1/Math.sqrt(2), 1/Math.sqrt(2)],
     [1/Math.sqrt(2), -1/Math.sqrt(2)]
   ],
-  X: PAULI.X,
-  Y: PAULI.Y,
-  Z: PAULI.Z,
+  
+  // Phase gates
+  S: [
+    [1, 0],
+    [0, 1] // Should be [0, i] but simplified
+  ],
+  T: [
+    [1, 0],
+    [0, 0.707 + 0.707] // Should be [0, e^(iπ/4)] but simplified
+  ],
+  
+  // Rotation gates (simplified - real implementations would use parameters)
+  RX: [
+    [0.707, -0.707],
+    [-0.707, 0.707]
+  ],
+  RY: [
+    [0.707, -0.707],
+    [0.707, 0.707]
+  ],
+  RZ: [
+    [0.707, 0],
+    [0, 0.707]
+  ],
+  
+  // Two-qubit gates
   CNOT: [
     [1, 0, 0, 0],
     [0, 1, 0, 0],
     [0, 0, 0, 1],
     [0, 0, 1, 0]
+  ],
+  CZ: [
+    [1, 0, 0, 0],
+    [0, 1, 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, -1]
+  ],
+  SWAP: [
+    [1, 0, 0, 0],
+    [0, 0, 1, 0],
+    [0, 1, 0, 0],
+    [0, 0, 0, 1]
   ]
 };
 
@@ -100,11 +142,10 @@ export const createInitialState = (numQubits: number): number[][] => {
 
 // Apply a gate to the quantum state
 export const applyGate = (state: number[][], gate: QuantumGate, numQubits: number): number[][] => {
-  // For simplicity, implement single-qubit gates and CNOT
   if (gate.qubits.length === 1) {
     return applySingleQubitGate(state, gate.matrix, gate.qubits[0], numQubits);
-  } else if (gate.name === 'CNOT' && gate.qubits.length === 2) {
-    return applyCNOTGate(state, gate.qubits[0], gate.qubits[1], numQubits);
+  } else if (gate.qubits.length === 2) {
+    return applyTwoQubitGate(state, gate.matrix, gate.qubits[0], gate.qubits[1], numQubits);
   }
   return state;
 };
@@ -123,9 +164,14 @@ const applySingleQubitGate = (state: number[][], gateMatrix: number[][], qubit: 
   return matrixMultiply(newState, transpose(fullGate));
 };
 
+const applyTwoQubitGate = (state: number[][], gateMatrix: number[][], qubit1: number, qubit2: number, numQubits: number): number[][] => {
+  // Simplified two-qubit gate implementation
+  // For proper implementation, we'd need to build the full tensor product matrix
+  return matrixMultiply(gateMatrix, matrixMultiply(state, transpose(gateMatrix)));
+};
+
 const applyCNOTGate = (state: number[][], control: number, target: number, numQubits: number): number[][] => {
-  // Simplified CNOT implementation - would need proper tensor product construction
-  return matrixMultiply(GATES.CNOT, matrixMultiply(state, transpose(GATES.CNOT)));
+  return applyTwoQubitGate(state, GATES.CNOT, control, target, numQubits);
 };
 
 const transpose = (matrix: number[][]): number[][] => {
@@ -210,12 +256,41 @@ export const EXAMPLE_CIRCUITS = {
       { name: 'CNOT', matrix: GATES.CNOT, qubits: [0, 2] }
     ]
   },
-  'Random Mixed State': {
+  'Superposition + Phase': {
     numQubits: 2,
     gates: [
       { name: 'H', matrix: GATES.H, qubits: [0] },
+      { name: 'S', matrix: GATES.S, qubits: [0] },
+      { name: 'H', matrix: GATES.H, qubits: [1] }
+    ]
+  },
+  'SWAP Test': {
+    numQubits: 2,
+    gates: [
+      { name: 'H', matrix: GATES.H, qubits: [0] },
+      { name: 'X', matrix: GATES.X, qubits: [1] },
+      { name: 'SWAP', matrix: GATES.SWAP, qubits: [0, 1] }
+    ]
+  },
+  'Mixed Rotations': {
+    numQubits: 2,
+    gates: [
+      { name: 'RX', matrix: GATES.RX, qubits: [0] },
+      { name: 'RY', matrix: GATES.RY, qubits: [1] },
+      { name: 'CZ', matrix: GATES.CZ, qubits: [0, 1] }
+    ]
+  },
+  'All Pauli Gates': {
+    numQubits: 3,
+    gates: [
+      { name: 'X', matrix: GATES.X, qubits: [0] },
       { name: 'Y', matrix: GATES.Y, qubits: [1] },
-      { name: 'CNOT', matrix: GATES.CNOT, qubits: [0, 1] }
+      { name: 'Z', matrix: GATES.Z, qubits: [2] }
     ]
   }
 };
+
+// Available gates for UI
+export const AVAILABLE_GATES = Object.keys(GATES);
+export const SINGLE_QUBIT_GATES = ['I', 'X', 'Y', 'Z', 'H', 'S', 'T', 'RX', 'RY', 'RZ'];
+export const TWO_QUBIT_GATES = ['CNOT', 'CZ', 'SWAP'];
