@@ -40,26 +40,46 @@ const BlochArrow: React.FC<{ vector: BlochVector; purity: number }> = ({ vector,
 
 const SphereWithShading: React.FC<{ purity: number }> = ({ purity }) => {
   const sphereRef = useRef<THREE.Mesh>(null);
+  const gridRef = useRef<THREE.LineSegments>(null);
   
   useFrame(({ clock }) => {
     if (sphereRef.current) {
       sphereRef.current.rotation.y = clock.elapsedTime * 0.2;
     }
   });
+
+  // Create wireframe geometry for better grid visibility
+  const createWireframeGeometry = () => {
+    const geometry = new THREE.SphereGeometry(1.01, 16, 16);
+    const edges = new THREE.EdgesGeometry(geometry);
+    return edges;
+  };
   
   return (
-    <mesh ref={sphereRef}>
-      <sphereGeometry args={[1, 32, 32]} />
-      <meshPhysicalMaterial
-        color="#ffffff"
-        transparent
-        opacity={0.2 + purity * 0.4}
-        wireframe={purity < 0.7}
-        metalness={0.1}
-        roughness={0.8}
-        clearcoat={0.3}
-      />
-    </mesh>
+    <group>
+      {/* Main sphere */}
+      <mesh ref={sphereRef}>
+        <sphereGeometry args={[1, 32, 32]} />
+        <meshPhysicalMaterial
+          color="#ffffff"
+          transparent
+          opacity={0.15 + purity * 0.25}
+          metalness={0.1}
+          roughness={0.8}
+          clearcoat={0.3}
+        />
+      </mesh>
+      
+      {/* Wireframe grid overlay for better visibility */}
+      <lineSegments ref={gridRef} geometry={createWireframeGeometry()}>
+        <lineBasicMaterial 
+          color="#ffffff" 
+          transparent 
+          opacity={0.3 + purity * 0.2}
+          linewidth={1}
+        />
+      </lineSegments>
+    </group>
   );
 };
 

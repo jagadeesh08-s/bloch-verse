@@ -4,13 +4,15 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Download, Play, Home } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Download, Play, Home, Code, Palette } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import BlochSphere3D from '@/components/BlochSphere';
+import CircuitBuilder from '@/components/CircuitBuilder';
 import { 
   simulateCircuit, 
-  EXAMPLE_CIRCUITS, 
+  EXAMPLE_CIRCUITS,
   AVAILABLE_GATES,
   SINGLE_QUBIT_GATES,
   TWO_QUBIT_GATES,
@@ -24,6 +26,8 @@ const Workspace: React.FC = () => {
   const [reducedStates, setReducedStates] = useState<DensityMatrix[]>([]);
   const [isSimulating, setIsSimulating] = useState(false);
   const [selectedExample, setSelectedExample] = useState<string>('');
+  const [numQubits, setNumQubits] = useState(2);
+  const [currentCircuit, setCurrentCircuit] = useState<any>(null);
 
   const handleExampleSelect = (example: string) => {
     if (example && EXAMPLE_CIRCUITS[example as keyof typeof EXAMPLE_CIRCUITS]) {
@@ -40,20 +44,26 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
     }
   };
 
+  const handleCircuitChange = (circuit: any) => {
+    setCurrentCircuit(circuit);
+    setNumQubits(circuit.numQubits);
+    setCircuitCode(JSON.stringify(circuit, null, 2));
+  };
+
   const handleSimulate = async () => {
     setIsSimulating(true);
     
     try {
-      // Parse the circuit JSON
       let circuit: QuantumCircuit;
       
-      if (selectedExample && EXAMPLE_CIRCUITS[selectedExample as keyof typeof EXAMPLE_CIRCUITS]) {
+      if (currentCircuit) {
+        circuit = currentCircuit;
+      } else if (selectedExample && EXAMPLE_CIRCUITS[selectedExample as keyof typeof EXAMPLE_CIRCUITS]) {
         circuit = EXAMPLE_CIRCUITS[selectedExample as keyof typeof EXAMPLE_CIRCUITS];
       } else {
         circuit = JSON.parse(circuitCode);
       }
       
-      // Simulate the circuit
       const states = simulateCircuit(circuit);
       setReducedStates(states);
       
@@ -135,7 +145,7 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
 
       {/* Main workspace */}
       <div className="flex-1 container mx-auto p-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left side - Circuit input */}
+        {/* Left side - Circuit Builder */}
         <motion.div
           className="space-y-6"
           initial={{ opacity: 0, x: -30 }}
@@ -146,66 +156,87 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <div className="w-2 h-2 bg-primary rounded-full animate-quantum-pulse" />
-                Quantum Circuit Editor
+                Quantum Circuit Builder
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Example Circuits
-                </label>
-                <Select onValueChange={handleExampleSelect} value={selectedExample}>
-                  <SelectTrigger className="bg-input border-primary/20">
-                    <SelectValue placeholder="Load an example circuit..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Object.keys(EXAMPLE_CIRCUITS).map(name => (
-                      <SelectItem key={name} value={name}>
-                        {name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+            <CardContent>
+              <Tabs defaultValue="visual" className="space-y-4">
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="visual" className="flex items-center gap-2">
+                    <Palette className="w-4 h-4" />
+                    Visual Builder
+                  </TabsTrigger>
+                  <TabsTrigger value="code" className="flex items-center gap-2">
+                    <Code className="w-4 h-4" />
+                    Code Editor
+                  </TabsTrigger>
+                </TabsList>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Available Gates
-                </label>
-                <div className="mb-3 p-3 bg-muted/20 rounded-md text-xs">
-                  <div className="mb-2">
-                    <span className="font-semibold text-primary">Single-qubit:</span> {SINGLE_QUBIT_GATES.join(', ')}
-                  </div>
+                <TabsContent value="visual" className="space-y-4">
+                  <CircuitBuilder
+                    onCircuitChange={handleCircuitChange}
+                    numQubits={numQubits}
+                    onQubitCountChange={setNumQubits}
+                  />
+                </TabsContent>
+
+                <TabsContent value="code" className="space-y-4">
                   <div>
-                    <span className="font-semibold text-accent">Two-qubit:</span> {TWO_QUBIT_GATES.join(', ')}
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Example Circuits
+                    </label>
+                    <Select onValueChange={handleExampleSelect} value={selectedExample}>
+                      <SelectTrigger className="bg-input border-primary/20">
+                        <SelectValue placeholder="Load an example circuit..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Object.keys(EXAMPLE_CIRCUITS).map(name => (
+                          <SelectItem key={name} value={name}>
+                            {name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
-                </div>
-              </div>
 
-              <div>
-                <label className="text-sm font-medium text-muted-foreground mb-2 block">
-                  Circuit JSON / QASM
-                </label>
-                <Textarea
-                  value={circuitCode}
-                  onChange={(e) => setCircuitCode(e.target.value)}
-                  placeholder={`{
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Available Gates
+                    </label>
+                    <div className="mb-3 p-3 bg-muted/20 rounded-md text-xs">
+                      <div className="mb-2">
+                        <span className="font-semibold text-primary">Single-qubit:</span> {SINGLE_QUBIT_GATES.join(', ')}
+                      </div>
+                      <div>
+                        <span className="font-semibold text-accent">Two-qubit:</span> {TWO_QUBIT_GATES.join(', ')}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-sm font-medium text-muted-foreground mb-2 block">
+                      Circuit JSON
+                    </label>
+                    <Textarea
+                      value={circuitCode}
+                      onChange={(e) => setCircuitCode(e.target.value)}
+                      placeholder={`{
   "numQubits": 2,
   "gates": [
     {"name": "H", "qubits": [0]},
-    {"name": "CNOT", "qubits": [0, 1]},
-    {"name": "RX", "qubits": [1]},
-    {"name": "CZ", "qubits": [0, 1]}
+    {"name": "CNOT", "qubits": [0, 1]}
   ]
 }`}
-                  className="h-64 font-mono text-sm bg-input border-primary/20 resize-none"
-                />
-              </div>
+                      className="h-64 font-mono text-sm bg-input border-primary/20 resize-none"
+                    />
+                  </div>
+                </TabsContent>
+              </Tabs>
 
               <Button 
                 variant="quantum"
                 onClick={handleSimulate}
-                disabled={isSimulating || !circuitCode.trim()}
+                disabled={isSimulating || (!circuitCode.trim() && !currentCircuit)}
                 className="w-full"
               >
                 <Play className="w-4 h-4 mr-2" />
