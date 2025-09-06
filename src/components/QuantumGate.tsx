@@ -47,8 +47,6 @@ export const QuantumGateBlock: React.FC<QuantumGateBlockProps> = ({
   return (
     <motion.div
       className={`${className} cursor-grab active:cursor-grabbing`}
-      draggable
-      onDragStart={() => onDragStart?.(gate)}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       initial={{ opacity: 0, y: 20 }}
@@ -59,7 +57,14 @@ export const QuantumGateBlock: React.FC<QuantumGateBlockProps> = ({
         relative p-3 rounded-lg border-2 border-primary/20 
         bg-card/50 backdrop-blur-sm hover:border-primary/40
         transition-all duration-200 group quantum-glow
-      `}>
+      `}
+        draggable
+        onDragStart={(e) => {
+          try { e.dataTransfer.setData('application/x-quantum-gate', gate.name); } catch {}
+          e.dataTransfer.effectAllowed = 'copy';
+          onDragStart?.(gate);
+        }}
+      >
         {/* Drag handle */}
         <div className="absolute top-1 right-1 opacity-50 group-hover:opacity-100 transition-opacity">
           <Grip className="w-3 h-3 text-muted-foreground" />

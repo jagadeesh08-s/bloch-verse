@@ -73,9 +73,9 @@ const SphereWithShading: React.FC<{ purity: number }> = ({ purity }) => {
       {/* Wireframe grid overlay for better visibility */}
       <lineSegments ref={gridRef} geometry={createWireframeGeometry()}>
         <lineBasicMaterial 
-          color="#ffffff" 
+          color="#000000" 
           transparent 
-          opacity={0.3 + purity * 0.2}
+          opacity={0.4 + purity * 0.2}
           linewidth={1}
         />
       </lineSegments>
@@ -160,11 +160,13 @@ const BlochSphere3D: React.FC<BlochSphereProps> = ({
   return (
     <div className="w-full h-full quantum-sphere-glow rounded-lg">
       <Canvas
+        dpr={[1, 1.75]}
+        gl={{ antialias: true, preserveDrawingBuffer: true }}
         camera={{ position: [3, 3, 3], fov: 50 }}
         style={{ width: size, height: size }}
       >
         <ambientLight intensity={0.6} />
-        <pointLight position={[10, 10, 10]} intensity={1} color="#195DDB" />
+        <pointLight position={[10, 10, 10]} intensity={1} color="#195DDB" castShadow={false} />
         <pointLight position={[-10, -10, -10]} intensity={0.5} color="#9D4EDD" />
         
         <SphereWithShading purity={purity} />

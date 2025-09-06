@@ -195,7 +195,7 @@ export const CircuitBuilder: React.FC<CircuitBuilderProps> = ({
               <div 
                 className="h-full flex items-center justify-center text-muted-foreground"
                 onDragOver={(e) => e.preventDefault()}
-                onDrop={() => handleDrop(0)}
+                onDrop={(e) => { e.preventDefault(); handleDrop(0); }}
               >
                 Drag quantum gates here to build your circuit
               </div>
@@ -207,9 +207,9 @@ export const CircuitBuilder: React.FC<CircuitBuilderProps> = ({
                       |{qubitIndex}⟩
                     </Badge>
                     <div 
-                      className="flex-1 h-8 border-t-2 border-primary/40 relative flex items-center gap-2"
+                      className="flex-1 h-12 border-t-2 border-primary/40 relative flex items-center gap-2"
                       onDragOver={(e) => e.preventDefault()}
-                      onDrop={() => handleDrop(qubitIndex)}
+                      onDrop={(e) => { e.preventDefault(); handleDrop(qubitIndex); }}
                     >
                       <AnimatePresence>
                         {circuitGates
@@ -231,7 +231,7 @@ export const CircuitBuilder: React.FC<CircuitBuilderProps> = ({
                             >
                               {gate.gate.symbol}
                               {gate.gate.type === 'double' && gate.qubits[0] === qubitIndex && (
-                                <div className="absolute top-full w-px h-8 bg-primary/60" />
+                                <div className="absolute top-full w-px h-12 bg-primary/60" />
                               )}
                             </motion.div>
                           ))}
