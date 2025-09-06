@@ -315,6 +315,7 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
                           purity={state.purity}
                           size={250}
                           showLabels={false}
+                          showAngles={true}
                         />
                       </div>
                       
@@ -332,6 +333,14 @@ ${circuit.gates.map(gate => `    {"name": "${gate.name}", "qubits": [${gate.qubi
                           </div>
                           <div className="text-center">
                             <div className="text-blue-400">Z: {state.blochVector.z.toFixed(2)}</div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-xs mt-2">
+                          <div className="text-center">
+                            <div className="text-cyan-400">θ: {(Math.acos(Math.abs(state.blochVector.z)) * 180 / Math.PI).toFixed(1)}°</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="text-purple-400">φ: {(Math.atan2(state.blochVector.y, state.blochVector.x) * 180 / Math.PI).toFixed(1)}°</div>
                           </div>
                         </div>
                       </div>

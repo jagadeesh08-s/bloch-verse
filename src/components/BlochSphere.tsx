@@ -13,6 +13,7 @@ interface BlochSphereProps {
   vector?: BlochVector;
   purity?: number;
   showLabels?: boolean;
+  showAngles?: boolean;
   size?: number;
   className?: string;
 }
@@ -83,7 +84,7 @@ const SphereWithShading: React.FC<{ purity: number }> = ({ purity }) => {
   );
 };
 
-const CoordinateAxes: React.FC = () => {
+const CoordinateAxes: React.FC<{ showAngles?: boolean }> = ({ showAngles = false }) => {
   const axisLength = 1.3;
   
   return (
@@ -147,6 +148,38 @@ const CoordinateAxes: React.FC = () => {
       >
         |1⟩
       </Text>
+      
+      {showAngles && (
+        <>
+          {/* Angle indicators */}
+          <Text
+            position={[1.2, 0, 1.2]}
+            fontSize={0.08}
+            color="#ffffff"
+            anchorX="center"
+          >
+            θ
+          </Text>
+          <Text
+            position={[1.2, 1.2, 0]}
+            fontSize={0.08}
+            color="#ffffff"
+            anchorX="center"
+          >
+            φ
+          </Text>
+          
+          {/* Angle arcs */}
+          <mesh rotation={[0, 0, 0]}>
+            <torusGeometry args={[0.8, 0.005, 8, 32, Math.PI / 4]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
+          </mesh>
+          <mesh rotation={[Math.PI / 2, 0, 0]}>
+            <torusGeometry args={[0.8, 0.005, 8, 32, Math.PI / 3]} />
+            <meshBasicMaterial color="#ffffff" transparent opacity={0.5} />
+          </mesh>
+        </>
+      )}
     </group>
   );
 };
@@ -155,6 +188,7 @@ const BlochSphere3D: React.FC<BlochSphereProps> = ({
   vector = { x: 0, y: 0, z: 1 }, 
   purity = 1,
   showLabels = true,
+  showAngles = false,
   size = 400 
 }) => {
   return (
@@ -171,7 +205,7 @@ const BlochSphere3D: React.FC<BlochSphereProps> = ({
         
         <SphereWithShading purity={purity} />
         <BlochArrow vector={vector} purity={purity} />
-        {showLabels && <CoordinateAxes />}
+        {showLabels && <CoordinateAxes showAngles={showAngles} />}
         
         <OrbitControls
           enablePan={false}

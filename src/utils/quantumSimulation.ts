@@ -1,8 +1,8 @@
 // Quantum simulation utilities for multi-qubit systems
 
-export interface QuantumGate {
+interface QuantumGate {
   name: string;
-  matrix: number[][];
+  matrix?: number[][];
   qubits: number[];
 }
 
@@ -101,6 +101,12 @@ export const matrixMultiply = (A: number[][], B: number[][]): number[][] => {
 };
 
 export const tensorProduct = (A: number[][], B: number[][]): number[][] => {
+  // Add safety checks
+  if (!A || !A.length || !A[0] || !B || !B.length || !B[0]) {
+    console.error('Invalid matrices for tensor product:', { A, B });
+    return [[1]]; // Return identity as fallback
+  }
+  
   const m = A.length;
   const n = A[0].length;
   const p = B.length;
@@ -142,10 +148,18 @@ export const createInitialState = (numQubits: number): number[][] => {
 
 // Apply a gate to the quantum state
 export const applyGate = (state: number[][], gate: QuantumGate, numQubits: number): number[][] => {
+  // Look up matrix by gate name if not provided
+  const gateMatrix = gate.matrix || GATES[gate.name as keyof typeof GATES];
+  
+  if (!gateMatrix) {
+    console.error(`Unknown gate: ${gate.name}`);
+    return state;
+  }
+  
   if (gate.qubits.length === 1) {
-    return applySingleQubitGate(state, gate.matrix, gate.qubits[0], numQubits);
+    return applySingleQubitGate(state, gateMatrix, gate.qubits[0], numQubits);
   } else if (gate.qubits.length === 2) {
-    return applyTwoQubitGate(state, gate.matrix, gate.qubits[0], gate.qubits[1], numQubits);
+    return applyTwoQubitGate(state, gateMatrix, gate.qubits[0], gate.qubits[1], numQubits);
   }
   return state;
 };
