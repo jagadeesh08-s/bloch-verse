@@ -86,6 +86,8 @@ const SphereWithShading: React.FC<{ purity: number }> = ({ purity }) => {
 
 const CoordinateAxes: React.FC<{ showAngles?: boolean }> = ({ showAngles = false }) => {
   const axisLength = 1.3;
+  const tickLength = 0.05;
+  const tickPositions = [-1, -0.5, 0.5, 1];
   
   return (
     <group>
@@ -94,6 +96,29 @@ const CoordinateAxes: React.FC<{ showAngles?: boolean }> = ({ showAngles = false
         <cylinderGeometry args={[0.01, 0.01, axisLength * 2, 8]} />
         <meshBasicMaterial color="red" />
       </mesh>
+      
+      {/* X axis tick marks */}
+      {tickPositions.map((pos, i) => (
+        <group key={`x-tick-${i}`}>
+          <mesh position={[pos, 0, 0]} rotation={[0, 0, 0]}>
+            <cylinderGeometry args={[0.005, 0.005, tickLength, 8]} />
+            <meshBasicMaterial color="red" />
+          </mesh>
+          <mesh position={[pos, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.005, 0.005, tickLength, 8]} />
+            <meshBasicMaterial color="red" />
+          </mesh>
+          <Text
+            position={[pos, -0.1, 0]}
+            fontSize={0.08}
+            color="red"
+            anchorX="center"
+          >
+            {pos.toFixed(1)}
+          </Text>
+        </group>
+      ))}
+      
       <Text
         position={[axisLength + 0.2, 0, 0]}
         fontSize={0.15}
@@ -108,6 +133,29 @@ const CoordinateAxes: React.FC<{ showAngles?: boolean }> = ({ showAngles = false
         <cylinderGeometry args={[0.01, 0.01, axisLength * 2, 8]} />
         <meshBasicMaterial color="green" />
       </mesh>
+      
+      {/* Y axis tick marks */}
+      {tickPositions.map((pos, i) => (
+        <group key={`y-tick-${i}`}>
+          <mesh position={[0, pos, 0]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.005, 0.005, tickLength, 8]} />
+            <meshBasicMaterial color="green" />
+          </mesh>
+          <mesh position={[0, pos, 0]} rotation={[Math.PI / 2, 0, 0]}>
+            <cylinderGeometry args={[0.005, 0.005, tickLength, 8]} />
+            <meshBasicMaterial color="green" />
+          </mesh>
+          <Text
+            position={[-0.1, pos, 0]}
+            fontSize={0.08}
+            color="green"
+            anchorX="center"
+          >
+            {pos.toFixed(1)}
+          </Text>
+        </group>
+      ))}
+      
       <Text
         position={[0, axisLength + 0.2, 0]}
         fontSize={0.15}
@@ -122,6 +170,29 @@ const CoordinateAxes: React.FC<{ showAngles?: boolean }> = ({ showAngles = false
         <cylinderGeometry args={[0.01, 0.01, axisLength * 2, 8]} />
         <meshBasicMaterial color="#00D4FF" />
       </mesh>
+      
+      {/* Z axis tick marks */}
+      {tickPositions.map((pos, i) => (
+        <group key={`z-tick-${i}`}>
+          <mesh position={[0, 0, pos]} rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.005, 0.005, tickLength, 8]} />
+            <meshBasicMaterial color="#00D4FF" />
+          </mesh>
+          <mesh position={[0, 0, pos]} rotation={[0, 0, 0]}>
+            <cylinderGeometry args={[0.005, 0.005, tickLength, 8]} />
+            <meshBasicMaterial color="#00D4FF" />
+          </mesh>
+          <Text
+            position={[0, -0.1, pos]}
+            fontSize={0.08}
+            color="#00D4FF"
+            anchorX="center"
+          >
+            {pos.toFixed(1)}
+          </Text>
+        </group>
+      ))}
+      
       <Text
         position={[0, 0, axisLength + 0.2]}
         fontSize={0.15}
