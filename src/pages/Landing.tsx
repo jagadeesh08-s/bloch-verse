@@ -154,23 +154,62 @@ const Landing: React.FC = () => {
             </div>
             <Accordion type="single" collapsible className="w-full">
               {[
-                {k:"I", d:"Identity gate leaves the state unchanged."},
-                {k:"X", d:"Pauli-X flips |0⟩ ↔ |1⟩ (quantum NOT)."},
-                {k:"Y", d:"Pauli-Y rotates with phase; bit and phase flip."},
-                {k:"Z", d:"Pauli-Z adds a phase to |1⟩ (phase flip)."},
-                {k:"H", d:"Hadamard creates superposition from basis states."},
-                {k:"S", d:"S gate adds a π/2 phase around Z axis."},
-                {k:"T", d:"T gate adds a π/4 phase around Z axis."},
-                {k:"RX", d:"Rotation around X by angle θ."},
-                {k:"RY", d:"Rotation around Y by angle θ."},
-                {k:"RZ", d:"Rotation around Z by angle θ."},
-                {k:"CNOT", d:"Controlled-X flips target if control is |1⟩."},
-                {k:"CZ", d:"Controlled-Z adds a phase if control is |1⟩."},
-                {k:"SWAP", d:"Swaps the states of two qubits."},
+                {
+                  k:"I (Identity)", 
+                  d:"The Identity gate leaves the quantum state completely unchanged. Matrix: [[1,0],[0,1]]. On the Bloch sphere, this represents no movement - the vector stays at its current position. Essential for quantum circuit timing and as a placeholder operation."
+                },
+                {
+                  k:"X (Pauli-X)", 
+                  d:"The Pauli-X gate performs a quantum NOT operation, flipping |0⟩ ↔ |1⟩. Matrix: [[0,1],[1,0]]. On the Bloch sphere, this rotates the vector 180° around the X-axis. Also called a 'bit flip' since it flips the computational basis states."
+                },
+                {
+                  k:"Y (Pauli-Y)", 
+                  d:"The Pauli-Y gate performs both a bit flip and phase flip simultaneously. Matrix: [[0,-i],[i,0]]. On the Bloch sphere, this rotates the vector 180° around the Y-axis. It maps |0⟩ → i|1⟩ and |1⟩ → -i|0⟩, combining X and Z operations."
+                },
+                {
+                  k:"Z (Pauli-Z)", 
+                  d:"The Pauli-Z gate adds a phase flip to |1⟩ while leaving |0⟩ unchanged. Matrix: [[1,0],[0,-1]]. On the Bloch sphere, this rotates the vector 180° around the Z-axis. It preserves computational basis probabilities but changes quantum phases."
+                },
+                {
+                  k:"H (Hadamard)", 
+                  d:"The Hadamard gate creates equal superposition from basis states. Matrix: [[1,1],[1,-1]]/√2. It maps |0⟩ → (|0⟩+|1⟩)/√2 and |1⟩ → (|0⟩-|1⟩)/√2. On the Bloch sphere, it swaps X and Z axes positions, fundamental for quantum algorithms."
+                },
+                {
+                  k:"S (Phase)", 
+                  d:"The S gate adds a π/2 (90°) phase rotation around the Z-axis. Matrix: [[1,0],[0,i]]. It maps |1⟩ → i|1⟩. On the Bloch sphere, this rotates the vector 90° around the Z-axis. Also called the √Z gate since S² = Z."
+                },
+                {
+                  k:"T (π/8)", 
+                  d:"The T gate adds a π/4 (45°) phase rotation around the Z-axis. Matrix: [[1,0],[0,e^(iπ/4)]]. It maps |1⟩ → e^(iπ/4)|1⟩. On the Bloch sphere, this rotates 45° around Z-axis. Also called √S gate since T² = S, essential for universal quantum computation."
+                },
+                {
+                  k:"RX (X-Rotation)", 
+                  d:"Parametric rotation around the X-axis by angle θ. Matrix: [[cos(θ/2),-i*sin(θ/2)],[-i*sin(θ/2),cos(θ/2)]]. On the Bloch sphere, this rotates the vector θ degrees around the X-axis. Fundamental for arbitrary single-qubit rotations and continuous quantum control."
+                },
+                {
+                  k:"RY (Y-Rotation)", 
+                  d:"Parametric rotation around the Y-axis by angle θ. Matrix: [[cos(θ/2),-sin(θ/2)],[sin(θ/2),cos(θ/2)]]. On the Bloch sphere, this rotates the vector θ degrees around the Y-axis. Particularly useful for amplitude manipulation without adding complex phases."
+                },
+                {
+                  k:"RZ (Z-Rotation)", 
+                  d:"Parametric rotation around the Z-axis by angle θ. Matrix: [[e^(-iθ/2),0],[0,e^(iθ/2)]]. On the Bloch sphere, this rotates the vector θ degrees around the Z-axis. Changes quantum phases while preserving computational basis probabilities."
+                },
+                {
+                  k:"CNOT (Controlled-X)", 
+                  d:"Two-qubit gate that flips the target qubit if the control qubit is |1⟩. Matrix: 4×4 with control logic. Essential for creating entanglement between qubits. On dual Bloch spheres, this creates correlations where the target's state depends on the control's measurement."
+                },
+                {
+                  k:"CZ (Controlled-Z)", 
+                  d:"Two-qubit gate that applies a Z gate to the target if the control is |1⟩. Matrix: diag([1,1,1,-1]). Symmetric operation - both qubits act as control and target simultaneously. Creates phase entanglement while preserving computational basis states."
+                },
+                {
+                  k:"SWAP", 
+                  d:"Two-qubit gate that exchanges the states of two qubits completely. Matrix: [[1,0,0,0],[0,0,1,0],[0,1,0,0],[0,0,0,1]]. On dual Bloch spheres, this literally swaps the vector positions. Useful for quantum routing and circuit optimization."
+                },
               ].map((item, idx) => (
                 <AccordionItem key={item.k} value={`item-${idx}`}>
-                  <AccordionTrigger>{item.k}</AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground">{item.d}</AccordionContent>
+                  <AccordionTrigger className="text-left">{item.k}</AccordionTrigger>
+                  <AccordionContent className="text-sm text-muted-foreground leading-relaxed">{item.d}</AccordionContent>
                 </AccordionItem>
               ))}
             </Accordion>
